@@ -20,10 +20,6 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 @InstallIn(SingletonComponent::class)
 object AppModule {
     const val BASE_URL = "https://keycarap2-chhkgpada5g3bda5.canadacentral-01.azurewebsites.net/"
-
-
-
-
     @Provides
     @Singleton
     fun providesMoshi(): Moshi =

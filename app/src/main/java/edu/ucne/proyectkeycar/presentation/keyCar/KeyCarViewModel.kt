@@ -54,36 +54,71 @@ class KeyCarViewModel @Inject constructor(
 
     private fun save(){
         viewModelScope.launch {
-            val result = keyCarRepository.AddKeyCar(uistate.value.toEntity())
-            result.collect{ resource ->
-                when(resource){
-                    is Resource.Error -> {
-                        _uiState.update {
-                            it.copy(
-                                error = resource.message ?: "Error"
-                            )
+
+            if(validar()){
+
+                val result = keyCarRepository.AddKeyCar(uistate.value.toEntity())
+                result.collect{ resource ->
+                    nuevo()
+                    when(resource){
+                        is Resource.Error -> {
+                            _uiState.update {
+                                it.copy(
+                                    error = resource.message ?: "Error"
+                                )
+                            }
                         }
-                    }
-                    is Resource.Loading -> {
-                        _uiState.update {
-                            it.copy(
-                                isLoading = true
-                            )
+                        is Resource.Loading -> {
+                            _uiState.update {
+                                it.copy(
+                                    isLoading = true
+                                )
+                            }
                         }
-                    }
-                    is Resource.Success -> {
-                        _uiState.update {
-                            it.copy(
-                               error = "KeyCar agregado",
-                            )
+                        is Resource.Success -> {
+                            _uiState.update {
+                                it.copy(
+                                    error = "KeyCar agregado",
+                                )
+                            }
+                            nuevo()
                         }
-                        nuevo()
                     }
                 }
             }
 
 
         }
+    }
+
+    private fun validar():Boolean {
+        var error = false
+
+        _uiState.update {
+            it.copy(
+                errorIva = if(it.iva == null){
+                    error = true
+                    "El Iva no puede estar vacio"
+                }else "",
+                errorCosto = if(it.costo == null) {
+                    error = true
+                    "El costo no puede estar vacio"
+                }else "",
+                errorPrecio = if(it.precio == null) {
+                    error = true
+                    "El precio no puede estar vacio"
+                } else "",
+                errorNombre = if(it.nombre.isBlank()) {
+                    error = true
+                    "El nombre no puede estar vacio"
+                }else "",
+                errorTipoLLave = if(it.keyTypeId == null) {
+                    error = true
+                    "Tipo de llave no puede estar vacio"
+                }else ""
+            )
+        }
+        return  !error
     }
     private fun OnchangeNombre(nombre: String){
         _uiState.update {
@@ -127,7 +162,6 @@ class KeyCarViewModel @Inject constructor(
             )
         }
     }
-
     private fun nuevo(){
         _uiState.update {
             it.copy(
@@ -140,7 +174,8 @@ class KeyCarViewModel @Inject constructor(
                 errorNombre = "",
                 errorCosto = "",
                 errorPrecio = "",
-                errorIva = ""
+                errorIva = "",
+                errorTipoLLave = ""
             )
         }
     }

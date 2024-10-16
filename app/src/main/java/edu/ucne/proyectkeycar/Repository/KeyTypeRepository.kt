@@ -15,6 +15,8 @@ class KeyTypeRepository @Inject constructor(
     private val keyTypeDao: KeyTypeDao,
     private val keyCarDataResource: KeyCarDataResource
 ) {
+
+
     fun getKeyTypes() : Flow<Resource<List<KeyTypeEntity>>> = flow {
         emit(Resource.Loading())
         val localKeyTypes = keyTypeDao.getAll().firstOrNull()
@@ -33,7 +35,6 @@ class KeyTypeRepository @Inject constructor(
         }
 
     }
-
     fun addKeyType(keyTypeDto: KeyTypeDto): Flow<Resource<KeyTypeEntity>> = flow{
         try {
             emit(Resource.Loading())

@@ -5,7 +5,7 @@ import edu.ucne.proyectkeycar.data.remote.dto.KeyCarDto
 
 data class Uistate(
     val keyId: Int? = null,
-    val nombre: String? = "",
+    val nombre: String = "",
     val keyTypeId: Int? = null,
     val costo: Double? = null,
     val precio: Int? = null,
@@ -14,6 +14,7 @@ data class Uistate(
     val errorCosto: String = "",
     val errorNombre: String = "",
     val errorIva: String = "",
+    val errorTipoLLave: String = "",
     val error: String = "",
     val isLoading: Boolean = false,
     val keyCars: List<KeyCarEntity> = emptyList()

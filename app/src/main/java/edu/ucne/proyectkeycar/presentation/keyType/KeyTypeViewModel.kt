@@ -58,33 +58,38 @@ class KeyTypeViewModel @Inject constructor(
 
     private fun save() {
         viewModelScope.launch {
-            keyTypeRepository.addKeyType(uistate.value.toEntity()).collect { result ->
-                when(result){
-                    is Resource.Error -> {
-                        _uiState.update {
-                            it.copy(
-                                error = result.message ?: "Error"
-                            )
+            if(validar()) {
+                keyTypeRepository.addKeyType(uistate.value.toEntity()).collect { result ->
+                    nuevo()
+                    when(result){
+                        is Resource.Error -> {
+                            _uiState.update {
+                                it.copy(
+                                    error = result.message ?: "Error"
+                                )
+                            }
+                        }
+                        is Resource.Loading -> {
+                            _uiState.update {
+                                it.copy(
+                                    isLoading = true
+                                )
+                            }
+                        }
+                        is Resource.Success -> {
+                            _uiState.update {
+                                it.copy(
+                                    error = "Key Type agregado",
+                                )
+
+                            }
+
                         }
                     }
-                    is Resource.Loading -> {
-                        _uiState.update {
-                            it.copy(
-                                isLoading = true
-                            )
-                        }
-                    }
-                    is Resource.Success -> {
-                        _uiState.update {
-                            it.copy(
-                                error = "Key Type agregado",
-                            )
-                        }
-                    }
+
                 }
 
             }
-
         }
     }
 
@@ -104,6 +109,20 @@ class KeyTypeViewModel @Inject constructor(
                 errorTipoLlave = ""
             )
         }
+    }
+
+    private fun validar(): Boolean {
+        var error = false
+        _uiState.update {
+            it.copy(
+                errorTipoLlave = if(it.errorTipoLlave.isBlank()) {
+                    error = true
+                    "Tipo de llave no puede estar vacio"
+                } else ""
+            )
+        }
+
+        return !error
     }
 
     fun onEvent(event: KeyTypeEvent) {

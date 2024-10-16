@@ -97,8 +97,11 @@ fun AddKeyTypeBodyScreen(
             }
             InputSelect(label = "Tipo de llave", onOptionSelected = {
                 onEvent(KeyCarEvent.OnchangeKeyTypeId(it))
+            })
+            uiState.errorTipoLLave.let { error ->
+                Text(text = error, color = Color.Red)
             }
-            )
+
             Spacer(modifier = Modifier.height(10.dp))
             Row(
                 modifier = Modifier.fillMaxSize(),
