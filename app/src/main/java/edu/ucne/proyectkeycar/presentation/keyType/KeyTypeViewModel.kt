@@ -3,16 +3,19 @@ package edu.ucne.proyectkeycar.presentation.keyType
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.ucne.proyectkeycar.Repository.KeyTypeRepository
+import edu.ucne.proyectkeycar.utils.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class KeyTypeViewModel @Inject constructor(
     private val keyTypeRepository: KeyTypeRepository
-): ViewModel() {
+) : ViewModel() {
     private val _uiState = MutableStateFlow(Uistate())
     val uistate = _uiState.asStateFlow()
 
@@ -20,26 +23,72 @@ class KeyTypeViewModel @Inject constructor(
         getKeyTypes()
     }
 
-    private fun getKeyTypes(){
+    private fun getKeyTypes() {
         viewModelScope.launch {
-            val result = keyTypeRepository.getKeyTypes()
+            keyTypeRepository.getKeyTypes().collect { result ->
+                when (result) {
+                    is Resource.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                error = result.message ?: "Error"
+                            )
+                        }
+                    }
 
-            _uiState.update {
-                it.copy(
-                    keyTypes = result.data?: emptyList()
-                )
+                    is Resource.Loading -> {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+
+                    is Resource.Success -> {
+                        _uiState.update {
+                            it.copy(
+                                keyTypes = result.data ?: emptyList()
+                            )
+                        }
+                    }
+
+                }
             }
         }
     }
 
     private fun save() {
         viewModelScope.launch {
-            keyTypeRepository.addKeyType(uistate.value.toEntity())
-            nuevo()
+            keyTypeRepository.addKeyType(uistate.value.toEntity()).collect { result ->
+                when(result){
+                    is Resource.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                error = result.message ?: "Error"
+                            )
+                        }
+                    }
+                    is Resource.Loading -> {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    is Resource.Success -> {
+                        _uiState.update {
+                            it.copy(
+                                error = "Key Type agregado",
+                            )
+                        }
+                    }
+                }
+
+            }
+
         }
     }
 
-    private fun onChangeTipoLlave(tipo: String){
+    private fun onChangeTipoLlave(tipo: String) {
         _uiState.update {
             it.copy(
                 tipoLlave = tipo
@@ -54,6 +103,13 @@ class KeyTypeViewModel @Inject constructor(
                 tipoLlave = "",
                 errorTipoLlave = ""
             )
+        }
+    }
+
+    fun onEvent(event: KeyTypeEvent) {
+        when (event) {
+            is KeyTypeEvent.OnchangeTypeKey -> onChangeTipoLlave(event.typeKey)
+            is KeyTypeEvent.Save -> save()
         }
     }
 }

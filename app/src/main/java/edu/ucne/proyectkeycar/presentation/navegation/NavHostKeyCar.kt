@@ -1,5 +1,4 @@
-package edu.ucne.proyectkeycar.presentation
-
+package edu.ucne.proyectkeycar.presentation.navegation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +22,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import edu.ucne.proyectkeycar.presentation.keyCar.AddKeyCarScreen
+import edu.ucne.proyectkeycar.presentation.keyCar.ListKeyCarScreen
+import edu.ucne.proyectkeycar.presentation.keyType.AddKeyTypeScreen
+import edu.ucne.proyectkeycar.presentation.keyType.ListKeyTypeScreen
 import kotlinx.coroutines.launch
 
 
@@ -85,28 +88,40 @@ fun NavHostKeyCar(
         Column(
 
         ) {
-
-
-            // Contenido del NavHost debajo del TopAppBar
             Box(modifier = Modifier.padding(top = 80.dp)) {
+
+
+
+
+
                 NavHost(
                     navController = navHostController,
                     startDestination = Screen.KeyTypeList
                 ) {
                     composable<Screen.KeyTypeList> {
-
+                       ListKeyTypeScreen(
+                           goToAdd = { navHostController.navigate(Screen.KeyType(0)) },
+                           onSelect = { navHostController.navigate(Screen.KeyType(it))}
+                       )
                     }
 
-                    composable<Screen.keyType> {
-
+                    composable<Screen.KeyType> {
+                        AddKeyTypeScreen(
+                            goToBack = { navHostController.navigate(Screen.KeyTypeList) }
+                        )
                     }
 
                     composable<Screen.KeyCarList> {
-
+                        ListKeyCarScreen(
+                            goToAdd = { navHostController.navigate(Screen.KeyCar(0)) },
+                            onSelect = { navHostController.navigate(Screen.KeyCar(it)) }
+                        )
                     }
 
                     composable<Screen.KeyCar> {
-
+                        AddKeyCarScreen(
+                            goToBack = { navHostController.navigate(Screen.KeyCarList) }
+                        )
                     }
                 }
             }

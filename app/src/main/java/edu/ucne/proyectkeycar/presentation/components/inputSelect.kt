@@ -16,7 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ucne.edu.ticketsistemaretrofit.presentation.sistema.SistemaViewModel
+import edu.ucne.proyectkeycar.presentation.keyType.KeyTypeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,8 +27,8 @@ fun InputSelect(
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf("") }
 
-    val viewModel: SistemaViewModel = hiltViewModel()
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val viewModel: KeyTypeViewModel = hiltViewModel()
+    val uiState by viewModel.uistate.collectAsStateWithLifecycle()
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded }
@@ -51,13 +51,13 @@ fun InputSelect(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            uiState.sistemas.forEach { option ->
+            uiState.keyTypes.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(option.nombreSistema?: "") },
+                    text = { Text(option.tipoLLave ?: "") },
                     onClick = {
-                        selectedOption = option.nombreSistema ?: ""
+                        selectedOption = option.tipoLLave ?: ""
                         expanded = false
-                        onOptionSelected(option.sistemaId ?: 0)
+                        onOptionSelected(option.keyTypeId ?: 0)
                     }
                 )
             }
